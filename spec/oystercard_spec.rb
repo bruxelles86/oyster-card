@@ -2,6 +2,8 @@ require 'oystercard'
 
 describe Oystercard do
 let(:card) { Oystercard.new }
+let(:station) { double("station") }
+
 before do
 @min = Oystercard::MIN_FUNDS
 end
@@ -28,25 +30,35 @@ end
 describe '#touch_in' do
 
   it 'touches in' do
-    card.top_up(@min); card.touch_in
+    card.top_up(@min); card.touch_in(station)
     expect(card).to be_in_journey
   end
 
   it 'raises an error when insufficient funds' do
-    expect { card.touch_in }.to raise_error 'Insuficient funds'
+    expect { card.touch_in(station) }.to raise_error 'Insuficient funds'
+  end
+
+  it 'records the entry station' do
+    card.top_up(@min); card.touch_in(station)
+    expect(card.entry_station).to eq station
   end
 end
 
 describe '#touch_out' do
 
   it 'touches out' do
-    card.top_up(@min); card.touch_in; card.touch_out
+    card.top_up(@min); card.touch_in(station); card.touch_out
     expect(card).not_to be_in_journey
   end
 
   it 'charges minimum fare' do
-  card.top_up(10); card.touch_in
+  card.top_up(10); card.touch_in(station)
   expect{ card.touch_out }.to change{ card.balance }.by -Oystercard::FARE
+  end
+
+  it 'erases entry station from memory upon touching out' do
+    card.top_up(@min); card.touch_in(station); card.touch_out
+    expect(card.entry_station).to be_nil
   end
 end
 
