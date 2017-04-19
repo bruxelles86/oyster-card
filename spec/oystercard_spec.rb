@@ -39,13 +39,14 @@ describe '#touch_in' do
   end
 
   it 'raises an error when insufficient funds' do
-    expect { card.touch_in(station) }.to raise_error 'Insuficient funds'
+    expect { card.touch_in(station) }.to raise_error 'Insufficient funds'
   end
 
-  it 'records the entry station' do
-    card.top_up(@min); card.touch_in(station)
-    expect(card.entry_station).to eq station
+  it 'charges a penalty fare if not touched out from previous trip' do
+    card.top_up(20); card.touch_in(station)
+    expect{card.touch_in(station)}.to change { card.balance }.by (-Journey::PEN_FARE)
   end
+
 end
 
 describe '#touch_out' do
@@ -60,16 +61,17 @@ describe '#touch_out' do
   expect{ card.touch_out(station) }.to change{ card.balance }.by -Oystercard::FARE
   end
 
-  it 'saves journey upon touch out' do
-    card.top_up(@min); card.touch_in(station); card.touch_out(station)
-    expect(card.journey_history[0].values_at(:entry_station, :exit_station)).to eq [station, station]
+  it 'charges a penalty fare if not touched in for journey' do
+    card.top_up(20)
+    expect{card.touch_out(station)}.to change { card.balance }.by (-Journey::PEN_FARE)
   end
+
 end
 
 describe '#save_journey' do
   it 'saves journey history' do
-  test_journey = card.save_journey
-  expect(card.journey_history).to include test_journey[0]
+  card.top_up(@min); card.touch_in(station); card.touch_out(station)
+  expect(card.journey_history[0].values_at(:entry_station, :exit_station)).to eq [station, station]
   end
 end
 
