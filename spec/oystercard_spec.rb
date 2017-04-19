@@ -15,6 +15,10 @@ end
 
   it { is_expected.to respond_to(:top_up).with(1).argument }
 
+  it 'initializes with an empty journey history' do
+    expect(card.journey_history).to be_empty
+  end
+
   describe '#top_up' do
     it 'tops up balance by specified amount' do
       subject.top_up(15)
@@ -47,18 +51,25 @@ end
 describe '#touch_out' do
 
   it 'touches out' do
-    card.top_up(@min); card.touch_in(station); card.touch_out
+    card.top_up(@min); card.touch_in(station); card.touch_out(station)
     expect(card).not_to be_in_journey
   end
 
   it 'charges minimum fare' do
   card.top_up(10); card.touch_in(station)
-  expect{ card.touch_out }.to change{ card.balance }.by -Oystercard::FARE
+  expect{ card.touch_out(station) }.to change{ card.balance }.by -Oystercard::FARE
   end
 
-  it 'erases entry station from memory upon touching out' do
-    card.top_up(@min); card.touch_in(station); card.touch_out
-    expect(card.entry_station).to be_nil
+  it 'saves journey upon touch out' do
+    card.top_up(@min); card.touch_in(station); card.touch_out(station)
+    expect(card.journey_history[0].values_at(:entry_station, :exit_station)).to eq [station, station]
+  end
+end
+
+describe '#save_journey' do
+  it 'saves journey history' do
+  test_journey = card.save_journey
+  expect(card.journey_history).to include test_journey[0]
   end
 end
 
