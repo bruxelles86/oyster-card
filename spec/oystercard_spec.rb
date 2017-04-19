@@ -1,7 +1,7 @@
 require 'oystercard'
 
 describe Oystercard do
-let(:card) { Oystercard.new }
+let(:card) { described_class.new }
 let(:station) { double("station") }
 
 before do
