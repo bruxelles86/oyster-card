@@ -35,7 +35,7 @@ class Oystercard
   end
 
   def save_journey
-    @journeylog.journeys << { entry_station: @journeylog.current_journey.entry_station, exit_station: @journeylog.current_journey.exit_station }
+    @journeylog.save({ entry_station: @journeylog.current_journey.entry_station, exit_station: @journeylog.current_journey.exit_station })
     @journeylog.current_journey = nil
   end
 
