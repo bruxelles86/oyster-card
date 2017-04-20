@@ -15,10 +15,6 @@ end
 
   it { is_expected.to respond_to(:top_up).with(1).argument }
 
-  it 'initializes with an empty journey history' do
-    expect(card.journey_history).to be_empty
-  end
-
   describe '#top_up' do
     it 'tops up balance by specified amount' do
       subject.top_up(15)
@@ -71,7 +67,7 @@ end
 describe '#save_journey' do
   it 'saves journey history' do
   card.top_up(@min); card.touch_in(station); card.touch_out(station)
-  expect(card.journey_history[0].values_at(:entry_station, :exit_station)).to eq [station, station]
+  expect(card.journeylog.journeys[0].values_at(:entry_station, :exit_station)).to eq [station, station]
   end
 end
 
