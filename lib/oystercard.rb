@@ -19,7 +19,7 @@ class Oystercard
   end
 
   def touch_in(station)
-    spend(@journeylog.current_journey.fare) if in_journey?
+    spend(@journeylog.journey.fare) if in_journey?
     fail 'Insufficient funds' if @balance < MIN_FUNDS
     @journeylog.start(station)
   end
@@ -27,16 +27,16 @@ class Oystercard
   def touch_out(station)
     @journeylog.start if !in_journey?
     @journeylog.finish(station)
-    spend(@journeylog.current_journey.fare)
+    spend(@journeylog.journey.fare)
   end
 
   def in_journey?
-    !!@journeylog.current_journey
+    !!@journeylog.journey
   end
 
   def save_journey
-    @journeylog.save({ entry_station: @journeylog.current_journey.entry_station, exit_station: @journeylog.current_journey.exit_station })
-    @journeylog.current_journey = nil
+    @journeylog.save({ entry_station: @journeylog.journey.entry_station, exit_station: @journeylog.journey.exit_station })
+    @journeylog.journey = nil
   end
 
   private
