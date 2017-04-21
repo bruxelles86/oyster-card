@@ -13,7 +13,7 @@ class Journey
 
   def fare
     return PEN_FARE if !@entry_station || !@exit_station
-    MIN_FARE
+    MIN_FARE + (@entry_station.zone - @exit_station.zone).abs
   end
 
   def finish(station)

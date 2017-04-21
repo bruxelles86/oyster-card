@@ -6,6 +6,7 @@ let(:station) { double("station") }
 
 before do
 @min = Oystercard::MIN_FUNDS
+allow(station).to receive_messages(name: "Aldgate", zone: 1)
 end
   it { is_expected.to respond_to(:balance) }
 
